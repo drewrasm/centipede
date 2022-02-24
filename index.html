@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type ="text/css" href="styles/main.css">
+    <title>Centipede</title>
+</head>
+<body onload="MyGame.game.initialize();">
+    <div id="game">
+        <div id="main-menu" class="screen">
+            main menu!
+            <button id='to-game'>Start Game</button>
+            <button id='to-hs'>High Scores</button>
+            <button id='to-about'>About</button>
+            <button id='to-controls'>Controls</button>
+        </div>
+        <div id="gameplay" class="screen">
+            <div>Game Play</div>
+            <div class="screen-menu">
+                <button id='game-to-main'>
+                    Main Menu
+                </button>
+            </div>
+        </div>
+        <div id="high-scores" class="screen">
+            <div>High Scores</div>
+            <div class="screen-menu">
+                <button id='hs-to-main'>
+                    Main Menu
+                </button>
+            </div>
+        </div>
+        <div id="about" class="screen">
+            Centipede
+            <div>Developed by Andrew Rasmussen</div>
+            <div class="screen-menu">
+                <button id='about-to-main'>
+                    Main Menu
+                </button>
+            </div>
+        </div>
+        <div id="controls" class="screen">
+            <div class="screen-menu">
+                <div>Controls</div>
+                <button id='controls-to-main'>
+                    Main Menu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let MyGame = {
+            screens : {},
+            input: {},
+            objects: {},
+            render: [],
+            utils: {}
+        };
+    </script>
+    <!-- add more scripts here -->
+    <script src="scripts/game.js"></script>
+    <script src="scripts/mainmenu.js"></script>
+    <script src="scripts/about.js"></script>
+    <script src="scripts/highscores.js"></script>
+    <script src="scripts/controls.js"></script>
+    <script src="scripts/gameplay.js"></script>
+
+
+</body>
+</html>
