@@ -70,6 +70,27 @@ button:hover {
     margin: 10px 0px 10px 0px;
 }
 
-.selected-action {
-    background-color: green;
+.selected {
+    background-color: var(--lt-grey);
+    border-radius: 10px;
 }
+
+.controls-config  {
+    text-align: center;
+    margin: 10px 0px 10px 0px;
+}
+
+.control {
+    border: 2px solid var(--teal);
+    width: 200px;
+    margin: auto;
+    border-radius: 10px;
+    margin: auto;
+    margin-top: 10px;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.control:hover {
+    background-color: var(--teal);
+}   
