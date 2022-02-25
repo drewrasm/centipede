@@ -1,19 +1,44 @@
 MyGame.screens["gameplay"] = (function (game) {
-    "use strict";
-  
-    function initialize() {
-      document.getElementById('game-to-main').addEventListener("click", () => {
-          game.showScreen("main-menu");
-      })
+  "use strict";
+
+  let lastTimeStamp = performance.now();
+  let totalTime = 0;
+  let cancelNextRequest = true;
+
+  function processInput(elapsedTime) {
+  }
+
+  function update(elapsedTime) {
+  }
+
+  function render() {
+  }
+
+  function gameLoop(time) {
+    let elapsedTime = time - lastTimeStamp;
+    lastTimeStamp = time;
+    totalTime += elapsedTime;
+
+    processInput(elapsedTime);
+    update(elapsedTime);
+    render();
+
+    if (!cancelNextRequest) {
+      requestAnimationFrame(gameLoop);
     }
-  
-    function run() {
-      // nothing to run
-    }
-  
-    return {
-      initialize: initialize,
-      run: run,
-    };
-  })(MyGame.game);
-  
+  }
+
+  function initialize() {
+  }
+
+  function run() {
+    lastTimeStamp = performance.now();
+    cancelNextRequest = false;
+    requestAnimationFrame(gameLoop);
+  }
+
+  return {
+    initialize: initialize,
+    run: run,
+  };
+})(MyGame.game);
