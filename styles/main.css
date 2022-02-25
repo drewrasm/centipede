@@ -1,5 +1,15 @@
+:root {
+    --dark-grey: #424242;
+    --md-blue: #12b7b0;
+    --teal: #00ffd5;
+    --lt-grey : #cccccc;
+    --md-grey: #a8a8a8;
+}
+
 body {
     margin: 0;
+    color: var(--dark-grey);
+    font-family: Courier, monospace
 }
 
 #game {
@@ -21,7 +31,45 @@ body {
 }
 
 #main-menu {
-    cursor: pointer;
+}
+
+button {
+    background-color: var(--md-grey);
+    border: none;
+    border-radius: 20px;
+    padding: 5px;
+}
+
+button:hover {
+    background-color: var(--md-blue);
+}
+
+.page-content {
     padding-top: 10px;
     font-size: 15px;
+    margin: auto;
+}
+
+.page-title {
+    font-size: 25px;
+    text-align: center;
+    height: 50px;
+}
+.page-subtitle {
+    text-align: center;
+}
+
+.page-actions {
+    margin: auto;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-actions button {
+    margin: 10px 0px 10px 0px;
+}
+
+.selected-action {
+    background-color: green;
 }

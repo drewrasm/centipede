@@ -8,11 +8,15 @@
 <body onload="MyGame.game.initialize();">
     <div id="game">
         <div id="main-menu" class="screen">
-            main menu!
-            <button id='to-game'>Start Game</button>
-            <button id='to-hs'>High Scores</button>
-            <button id='to-about'>About</button>
-            <button id='to-controls'>Controls</button>
+            <div class="page-content">
+                <div class="page-title">CENTIPEDE</div>
+                <div class="page-actions">
+                    <button id='to-game'>Start Game</button>
+                    <button id='to-hs'>High Scores</button>
+                    <button id='to-about'>About</button>
+                    <button id='to-controls'>Controls</button>
+                </div>
+            </div>
         </div>
         <div id="gameplay" class="screen">
             <div>Game Play</div>
@@ -23,28 +27,38 @@
             </div>
         </div>
         <div id="high-scores" class="screen">
-            <div>High Scores</div>
-            <div class="screen-menu">
-                <button id='hs-to-main'>
-                    Main Menu
-                </button>
+            <div class="page-content">
+                <div class="page-title">HIGH SCORES</div>
+                <div class="page-actions">
+                    <button id='hs-to-main'>
+                        Main Menu
+                    </button>
+                </div>
             </div>
         </div>
         <div id="about" class="screen">
-            Centipede
-            <div>Developed by Andrew Rasmussen</div>
-            <div class="screen-menu">
-                <button id='about-to-main'>
-                    Main Menu
-                </button>
+            <div class="page-content">
+                <div class="page-title">
+                    CENTIPEDE
+                </div>
+                <div class="page-subtitle">Developed by Andrew Rasmussen</div>
+                <div class="page-actions">
+                    <button id='about-to-main'>
+                        Main Menu
+                    </button>
+                </div>
             </div>
         </div>
         <div id="controls" class="screen">
-            <div class="screen-menu">
-                <div>Controls</div>
-                <button id='controls-to-main'>
-                    Main Menu
-                </button>
+            <div class="page-content">
+                <div class="page-title">
+                    Controls
+                </div>
+                <div class="page-actions">
+                    <button id='controls-to-main'>
+                        Main Menu
+                    </button>
+                </div>
             </div>
         </div>
     </div>

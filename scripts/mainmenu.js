@@ -1,13 +1,6 @@
 MyGame.screens["main-menu"] = (function (game) {
   "use strict";
 
-  /*
-  - view credits ( about page )
-  - view high scores
-  - customize controls
-  - new game
-   */
-
   function initialize() {
     document.getElementById("to-about").addEventListener("click", () => {
       game.showScreen("about");
@@ -21,6 +14,8 @@ MyGame.screens["main-menu"] = (function (game) {
     document.getElementById('to-game').addEventListener("click", () => {
         game.showScreen("gameplay");
     })
+
+
   }
 
   function run() {
