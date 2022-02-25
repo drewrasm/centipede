@@ -34,7 +34,6 @@ MyGame.screens['controls'] = (function(game) {
     }
 
     const styleSelected = (selected) => {
-        console.log('style selected called')
         for(let control of Object.keys(controls)) {
             if(control === selected) {
                 controls[control].element.classList.add('selected')
