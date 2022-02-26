@@ -1,4 +1,4 @@
-MyGame.screens["gameplay"] = (function (game) {
+MyGame.screens["gameplay"] = (function (game, keyboard) {
   "use strict";
 
   let lastTimeStamp = performance.now();
@@ -41,4 +41,4 @@ MyGame.screens["gameplay"] = (function (game) {
     initialize: initialize,
     run: run,
   };
-})(MyGame.game);
+})(MyGame.game, MyGame.keyboard);
