@@ -7,6 +7,7 @@ MyGame.graphics = (function() {
     const HEIGHT_BOUND = 14;
 
     let cellHeight = canvas.height / 20;
+    let cellWidth = canvas.width / 30;
 
     function clear() {
         context.clearRect(0, 0, canvas.width, canvas.height);
@@ -48,7 +49,8 @@ MyGame.graphics = (function() {
         drawRectangle: drawRectangle,
         canvas,
         HEIGHT_BOUND,
-        cellHeight
+        cellHeight,
+        cellWidth
     };
 
     return api;

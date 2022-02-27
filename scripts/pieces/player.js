@@ -4,7 +4,7 @@
 
 MyGame.pieces.player = function (spec) {
   "use strict";
-  const HEIGHT_BOUND = 14;
+  const HEIGHT_BOUND = 13;
 
   let canvas = document.getElementById("id-canvas");
   let cellHeight = canvas.height / 20;
@@ -37,7 +37,7 @@ MyGame.pieces.player = function (spec) {
   };
   const moveLeft = (elapsedTime) => {
     let newX = spec.center.x - spec.moveRate * elapsedTime;
-    if (newX - spec.width / 2) {
+    if (newX - spec.width / 2 > 0) {
       spec.center.x = newX;
     }
   };
