@@ -1,17 +1,42 @@
-MyGame.screens["gameplay"] = (function (game, keyboard) {
+MyGame.screens["gameplay"] = (function (game, keyboard, pieces, graphics, renderer) {
   "use strict";
+
+  let canvas = document.getElementById("id-canvas");
+
+  // break the canvas into 20 pieces
+  // let the player move in the first 6 pieces
+  // make a player object
+
+  let player = pieces.player({
+    width: 100,
+    height: 100,
+    center: {
+      x: canvas.width / 2 + 10,
+      y: graphics.cellHeight * graphics.HEIGHT_BOUND - graphics.cellHeight + 10
+    },
+    imageSrc: 'images/filled_star.jpg'
+  });
+
+  // make a centipede body object
+  // make a centipede head object
+  // make a mushroom object
+  // make a poison mushroom object
+
+  let gameKeyboard = keyboard();
 
   let lastTimeStamp = performance.now();
   let totalTime = 0;
   let cancelNextRequest = true;
 
   function processInput(elapsedTime) {
+    gameKeyboard.update(elapsedTime);
   }
 
-  function update(elapsedTime) {
-  }
+  function update(elapsedTime) {}
 
   function render() {
+    graphics.clear()
+    renderer.player.render(player)
   }
 
   function gameLoop(time) {
@@ -28,8 +53,7 @@ MyGame.screens["gameplay"] = (function (game, keyboard) {
     }
   }
 
-  function initialize() {
-  }
+  function initialize() {}
 
   function run() {
     lastTimeStamp = performance.now();
@@ -41,4 +65,4 @@ MyGame.screens["gameplay"] = (function (game, keyboard) {
     initialize: initialize,
     run: run,
   };
-})(MyGame.game, MyGame.keyboard);
+})(MyGame.game, MyGame.keyboard, MyGame.pieces, MyGame.graphics, MyGame.renderer);

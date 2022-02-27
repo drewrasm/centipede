@@ -12,6 +12,10 @@ body {
     font-family: Courier, monospace
 }
 
+#id-canvas {
+    background-color: black;
+}
+
 #game {
     margin: auto;
     display: block;

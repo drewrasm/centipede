@@ -2,7 +2,7 @@
 // input object
 // ------------------------------------------------------------------
 
-MyGame.keyboard = (function() {
+MyGame.keyboard = function() {
     'use strict';
     
     let that = {
@@ -37,4 +37,4 @@ MyGame.keyboard = (function() {
     window.addEventListener('keyup', keyRelease);
 
     return that;
-}());
+};
