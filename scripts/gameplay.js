@@ -34,6 +34,16 @@ MyGame.screens["gameplay"] = (function (
     imageSrc: "images/mushroom.png"
   })
 
+  let lazerExample = pieces.lazer({
+    width: graphics.cellWidth / 5,
+    height: graphics.cellHeight,
+    center: {
+      x: canvas.width / 2 + 80,
+      y: graphics.cellHeight * graphics.HEIGHT_BOUND,
+    },
+    imageSrc: "images/lazer.png"
+  })
+
   // make a centipede body object
   // make a centipede head object
   // make a mushroom object
@@ -70,6 +80,7 @@ MyGame.screens["gameplay"] = (function (
     graphics.clear();
     renderer.player.render(player);
     renderer.mushroom.render(mushroomExample);
+    renderer.lazer.render(lazerExample);
   }
 
   function gameLoop(time) {
