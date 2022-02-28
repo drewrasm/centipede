@@ -15,7 +15,7 @@ MyGame.pieces.player = function (spec) {
   image.onload = function () {
     imageReady = true;
   };
-  image.src = "images/filled_star.jpg";
+  image.src = spec.imageSrc;
 
   const moveUp = (elapsedTime) => {
     let newY = spec.center.y - spec.moveRate * elapsedTime;

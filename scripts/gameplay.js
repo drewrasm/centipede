@@ -20,9 +20,19 @@ MyGame.screens["gameplay"] = (function (
       x: canvas.width / 2 + 10,
       y: graphics.cellHeight * graphics.HEIGHT_BOUND,
     },
-    imageSrc: "images/filled_star.jpg",
+    imageSrc: "images/wand.png",
     moveRate: .95
   });
+
+  let mushroomExample = pieces.mushroom({
+    width: graphics.cellWidth,
+    height: graphics.cellHeight,
+    center: {
+      x: canvas.width / 2 + 50,
+      y: graphics.cellHeight * graphics.HEIGHT_BOUND,
+    },
+    imageSrc: "images/mushroom.png"
+  })
 
   // make a centipede body object
   // make a centipede head object
@@ -35,16 +45,31 @@ MyGame.screens["gameplay"] = (function (
   let totalTime = 0;
   let cancelNextRequest = true;
 
+  const updateKeys = () => {
+    gameKeyboard.register(window.localStorage.getItem("up") || 'ArrowUp', player.moveUp);
+    gameKeyboard.register(window.localStorage.getItem("down") || 'ArrowDown', player.moveDown);
+    gameKeyboard.register(
+      window.localStorage.getItem("right") || 'ArrowRight',
+      player.moveRight
+    );
+    gameKeyboard.register(
+      window.localStorage.getItem("left") || 'ArrowLeft',
+      player.moveLeft
+    );
+  }
+
   function processInput(elapsedTime) {
     gameKeyboard.update(elapsedTime);
   }
 
   function update(elapsedTime) {
+    updateKeys()
   }
 
   function render() {
     graphics.clear();
     renderer.player.render(player);
+    renderer.mushroom.render(mushroomExample);
   }
 
   function gameLoop(time) {
@@ -62,16 +87,11 @@ MyGame.screens["gameplay"] = (function (
   }
 
   function initialize() {
-    gameKeyboard.register(window.localStorage.getItem("up") || 'ArrowUp', player.moveUp);
-    gameKeyboard.register(window.localStorage.getItem("down") || 'ArrowDown', player.moveDown);
-    gameKeyboard.register(
-      window.localStorage.getItem("right") || 'ArrowRight',
-      player.moveRight
-    );
-    gameKeyboard.register(
-      window.localStorage.getItem("left") || 'ArrowLeft',
-      player.moveLeft
-    );
+    updateKeys()
+    document.getElementById('game-to-main').addEventListener('click', () => {
+      cancelNextRequest = true;
+      game.showScreen('main-menu')
+    })
   }
 
   function run() {

@@ -2,11 +2,29 @@
 // mushroom object
 // ------------------------------------------------------------------
 
-MyGame.pieces.mushroom = (function() {
-    'use strict';
-    
-    let that = {
+MyGame.pieces.mushroom = function (spec) {
+    "use strict";
+    // const HEIGHT_BOUND = 13;
+  
+    // let canvas = document.getElementById("id-canvas");
+    // let cellHeight = canvas.height / 20;
+  
+    let imageReady = false;
+    let image = new Image();
+  
+    image.onload = function () {
+      imageReady = true;
     };
-
-    return that;
-}());
+    image.src = spec.imageSrc;
+  
+    return {
+      get x() {return spec.center.x},
+      get y() {return spec.center.y},
+      get center() {return spec.center},
+      get width() {return spec.width},
+      get height() {return spec.height},
+      get image() {return image},
+      get imageReady() {return imageReady},
+    };
+  };
+  
