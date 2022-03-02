@@ -79,6 +79,22 @@ MyGame.screens["gameplay"] = (function (
     );
   };
 
+  let lives = [];
+
+  for (let i = 0; i < 3; i++) {
+    lives.push(
+      pieces.life({
+        width: graphics.cellWidth * 0.65,
+        height: graphics.cellHeight * 0.65,
+        center: {
+          x: (canvas.width / 2) + (i * graphics.cellWidth),
+          y: graphics.cellWidth / 2,
+        },
+        imageSrc: "images/wand.png",
+      })
+    );
+  }
+
   let player = pieces.player({
     width: graphics.cellWidth * 0.65,
     height: graphics.cellHeight * 0.65,
@@ -93,13 +109,13 @@ MyGame.screens["gameplay"] = (function (
     handleLazer: handleLazer,
   });
 
-  let score = 0
+  let score = 0;
   let scoreText = pieces.text({
     text: score,
-    font: `${graphics.cellHeight * .8}pt Arial`,
+    font: `${graphics.cellHeight * 0.8}pt Arial`,
     fillStyle: " #cccccc",
     strokeStyle: " #cccccc",
-    position: { x: (graphics.canvas.width / 4), y: 2},
+    position: { x: graphics.canvas.width / 4, y: 2 },
     // position: { x: graphics.width / 2, y: graphics.cellHeight / 2 },
   });
 
@@ -151,7 +167,7 @@ MyGame.screens["gameplay"] = (function (
       for (let m of mushrooms) {
         if (isIntersecting(l, m)) {
           hitObstacle = true;
-          score += 600
+          score += 600;
           m.loseLife();
           if (m.lives === 0) {
             remove(mushrooms, m);
@@ -165,7 +181,7 @@ MyGame.screens["gameplay"] = (function (
       }
     }
 
-    scoreText.updateText(score)
+    scoreText.updateText(score);
   }
 
   function render() {
@@ -177,6 +193,9 @@ MyGame.screens["gameplay"] = (function (
     }
     for (let l of lazers) {
       renderer.lazer.render(l);
+    }
+    for(let life of lives) {
+      renderer.life.render(life);
     }
   }
 
