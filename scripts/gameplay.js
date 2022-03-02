@@ -13,37 +13,36 @@ MyGame.screens["gameplay"] = (function (
     return Math.floor(Math.random() * (max - min) + min);
   };
 
-  let mushrooms = []
+  let mushrooms = [];
 
   const generateMushrooms = () => {
-    mushrooms = []
-    // each row should have roughly 1-3 mushrooms
-    // randomly see how many are in each row
-    // randomly choose which row they're in
+    mushrooms = [];
     for (let row = 0; row <= graphics.rows; row++) {
       let randMushCount = randomNumber(1, 2);
-      let randColumns = []
-      for(let m = 0; m <= randMushCount; m++) {
-        let column = randomNumber(1, graphics.columns)
-        if(!randColumns.includes(column)) {
-          randColumns.push(randomNumber(1, graphics.columns))
+      let randColumns = [];
+      for (let m = 0; m <= randMushCount; m++) {
+        let column = randomNumber(1, graphics.columns);
+        if (!randColumns.includes(column)) {
+          randColumns.push(randomNumber(1, graphics.columns));
         }
       }
-      for(let col of randColumns) {
-        mushrooms.push(pieces.mushroom({
-          width: graphics.cellWidth * .75,
-          height: graphics.cellHeight * .75,
-          center: {
-            x: (col * graphics.cellWidth) + graphics.cellWidth / 2,
-            y: (row * graphics.cellHeight) + graphics.cellHeight / 2
-          },
-          imageSrc: 'images/mushroom.png'
-        }))
+      for (let col of randColumns) {
+        mushrooms.push(
+          pieces.mushroom({
+            width: graphics.cellWidth * 0.75,
+            height: graphics.cellHeight * 0.75,
+            center: {
+              x: col * graphics.cellWidth + graphics.cellWidth / 2,
+              y: row * graphics.cellHeight + graphics.cellHeight / 2,
+            },
+            imageSrc: "images/mushroom.png",
+          })
+        );
       }
     }
   };
 
-  generateMushrooms()
+  generateMushrooms();
 
   const isIntersecting = (first, second) => {
     return (
@@ -59,9 +58,21 @@ MyGame.screens["gameplay"] = (function (
     );
   };
 
+  let lazers = []
+
+  const handleLazer = (lazerCenter) => {
+    // create a new lazer and let it do it's thang
+    lazers.push(pieces.lazer({
+      width: graphics.cellWidth * .2,
+      height: graphics.cellHeight * .9,
+      center: {...lazerCenter, y: lazerCenter.y - graphics.cellHeight },
+      imageSrc: "images/lazer.png",
+    }))
+  }
+
   let player = pieces.player({
-    width: graphics.cellWidth * .65,
-    height: graphics.cellHeight * .65,
+    width: graphics.cellWidth * 0.65,
+    height: graphics.cellHeight * 0.65,
     center: {
       x: canvas.width / 2 + 10,
       y: graphics.cellHeight * graphics.HEIGHT_BOUND,
@@ -70,6 +81,7 @@ MyGame.screens["gameplay"] = (function (
     moveRate: 0.55,
     barriers: mushrooms,
     checkIntersect: isIntersecting,
+    handleLazer: handleLazer
   });
 
   // make a centipede body object
@@ -99,6 +111,12 @@ MyGame.screens["gameplay"] = (function (
       window.localStorage.getItem("left") || "ArrowLeft",
       player.moveLeft
     );
+    let fireKey = null;
+    // figure this out better lol
+    if (window.localStorage.getItem("fire") === "Space") {
+      fireKey = " ";
+    }
+    gameKeyboard.register(fireKey || " ", player.fire);
   };
 
   function processInput(elapsedTime) {
@@ -109,14 +127,17 @@ MyGame.screens["gameplay"] = (function (
     updateKeys();
 
     // check if mushrooms have been hit by their lazers, change their image or remove them from the map
-    player.barriers = mushrooms
+    player.barriers = mushrooms;
   }
 
   function render() {
     graphics.clear();
     renderer.player.render(player);
-    for(let m of mushrooms) {
+    for (let m of mushrooms) {
       renderer.mushroom.render(m);
+    }
+    for (let l of lazers) {
+      renderer.lazer.render(l);
     }
   }
 

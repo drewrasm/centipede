@@ -17,6 +17,19 @@ MyGame.pieces.player = function (spec) {
   };
   image.src = spec.imageSrc;
 
+  function throttle(fn, limit) {
+    let waiting = false
+    return (...args) => {
+      if (!waiting) {
+        fn.apply(this, args)
+        waiting = true
+        setTimeout(() => {
+          waiting = false
+        }, limit)
+      }
+    }
+  }
+
   const hitsBarriers = (newCenter) => {
     for(let barrier of spec.barriers) {
       let newThat = {...that, center: newCenter}
@@ -52,6 +65,10 @@ MyGame.pieces.player = function (spec) {
     }
   };
 
+  const fire = throttle((elapsedTime) => {
+    spec.handleLazer(spec.center)
+  }, 125)
+
   let that = {
     get x() {
       return spec.center.x;
@@ -81,6 +98,7 @@ MyGame.pieces.player = function (spec) {
     moveDown,
     moveRight,
     moveLeft,
+    fire
   };
 
   return that;
