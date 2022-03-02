@@ -50,7 +50,9 @@ MyGame.graphics = (function() {
         canvas,
         HEIGHT_BOUND,
         cellHeight,
-        cellWidth
+        cellWidth,
+        rows: 20,
+        columns: 30
     };
 
     return api;
