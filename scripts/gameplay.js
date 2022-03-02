@@ -24,7 +24,7 @@ MyGame.screens["gameplay"] = (function (
 
   const generateMushrooms = () => {
     mushrooms = [];
-    for (let row = 0; row <= graphics.rows; row++) {
+    for (let row = 1; row <= graphics.rows; row++) {
       let randMushCount = randomNumber(1, 2);
       let randColumns = [];
       for (let m = 0; m <= randMushCount; m++) {
@@ -93,6 +93,16 @@ MyGame.screens["gameplay"] = (function (
     handleLazer: handleLazer,
   });
 
+  let score = 0
+  let scoreText = pieces.text({
+    text: score,
+    font: `${graphics.cellHeight * .8}pt Arial`,
+    fillStyle: " #cccccc",
+    strokeStyle: " #cccccc",
+    position: { x: (graphics.canvas.width / 4), y: 2},
+    // position: { x: graphics.width / 2, y: graphics.cellHeight / 2 },
+  });
+
   // make a centipede body object
   // make a centipede head object
   // make a poison mushroom object
@@ -135,16 +145,16 @@ MyGame.screens["gameplay"] = (function (
   function update(elapsedTime) {
     updateKeys();
 
-    // check if mushrooms have been hit by their lazers, change their image or remove them from the map
     player.barriers = mushrooms;
     for (let l of lazers) {
       let hitObstacle = false;
       for (let m of mushrooms) {
         if (isIntersecting(l, m)) {
           hitObstacle = true;
+          score += 600
           m.loseLife();
-          if(m.lives === 0) {
-            remove(mushrooms, m)
+          if (m.lives === 0) {
+            remove(mushrooms, m);
           }
         }
       }
@@ -154,11 +164,14 @@ MyGame.screens["gameplay"] = (function (
         remove(lazers, l);
       }
     }
+
+    scoreText.updateText(score)
   }
 
   function render() {
     graphics.clear();
     renderer.player.render(player);
+    renderer.text.render(scoreText);
     for (let m of mushrooms) {
       renderer.mushroom.render(m);
     }
