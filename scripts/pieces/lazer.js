@@ -7,11 +7,18 @@ MyGame.pieces.lazer = function (spec) {
   
     let imageReady = false;
     let image = new Image();
+
+    let moveRate = .65
   
     image.onload = function () {
       imageReady = true;
     };
     image.src = spec.imageSrc;
+
+    const updateMovement = (elapsedTime) => {
+        let newY = spec.center.y - moveRate * elapsedTime;
+        spec.center.y = newY
+    }
   
     return {
       get x() {return spec.center.x},
@@ -21,6 +28,7 @@ MyGame.pieces.lazer = function (spec) {
       get height() {return spec.height},
       get image() {return image},
       get imageReady() {return imageReady},
+      updateMovement
     };
   };
   

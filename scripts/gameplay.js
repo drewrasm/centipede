@@ -13,6 +13,13 @@ MyGame.screens["gameplay"] = (function (
     return Math.floor(Math.random() * (max - min) + min);
   };
 
+  const remove = (array, item) => {
+    let index = array.indexOf(item)
+    if (index > -1) {
+      array.splice(index, 1);
+    }
+  }
+
   let mushrooms = [];
 
   const generateMushrooms = () => {
@@ -128,6 +135,13 @@ MyGame.screens["gameplay"] = (function (
 
     // check if mushrooms have been hit by their lazers, change their image or remove them from the map
     player.barriers = mushrooms;
+    for(let l of lazers) {
+      if(l.center.y > (0 - graphics.cellHeight)) {
+        l.updateMovement(elapsedTime)
+      } else {
+        remove(lazers, l)
+      }
+    } 
   }
 
   function render() {
