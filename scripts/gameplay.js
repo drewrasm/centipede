@@ -14,11 +14,11 @@ MyGame.screens["gameplay"] = (function (
   };
 
   const remove = (array, item) => {
-    let index = array.indexOf(item)
+    let index = array.indexOf(item);
     if (index > -1) {
       array.splice(index, 1);
     }
-  }
+  };
 
   let mushrooms = [];
 
@@ -65,17 +65,19 @@ MyGame.screens["gameplay"] = (function (
     );
   };
 
-  let lazers = []
+  let lazers = [];
 
   const handleLazer = (lazerCenter) => {
     // create a new lazer and let it do it's thang
-    lazers.push(pieces.lazer({
-      width: graphics.cellWidth * .2,
-      height: graphics.cellHeight * .9,
-      center: {...lazerCenter, y: lazerCenter.y - graphics.cellHeight },
-      imageSrc: "images/lazer.png",
-    }))
-  }
+    lazers.push(
+      pieces.lazer({
+        width: graphics.cellWidth * 0.2,
+        height: graphics.cellHeight * 0.9,
+        center: { ...lazerCenter, y: lazerCenter.y - graphics.cellHeight / 4 },
+        imageSrc: "images/lazer.png",
+      })
+    );
+  };
 
   let player = pieces.player({
     width: graphics.cellWidth * 0.65,
@@ -88,7 +90,7 @@ MyGame.screens["gameplay"] = (function (
     moveRate: 0.55,
     barriers: mushrooms,
     checkIntersect: isIntersecting,
-    handleLazer: handleLazer
+    handleLazer: handleLazer,
   });
 
   // make a centipede body object
@@ -135,13 +137,23 @@ MyGame.screens["gameplay"] = (function (
 
     // check if mushrooms have been hit by their lazers, change their image or remove them from the map
     player.barriers = mushrooms;
-    for(let l of lazers) {
-      if(l.center.y > (0 - graphics.cellHeight)) {
-        l.updateMovement(elapsedTime)
-      } else {
-        remove(lazers, l)
+    for (let l of lazers) {
+      let hitObstacle = false;
+      for (let m of mushrooms) {
+        if (isIntersecting(l, m)) {
+          hitObstacle = true;
+          m.loseLife();
+          if(m.lives === 0) {
+            remove(mushrooms, m)
+          }
+        }
       }
-    } 
+      if (l.center.y > 0 - graphics.cellHeight && !hitObstacle) {
+        l.updateMovement(elapsedTime);
+      } else {
+        remove(lazers, l);
+      }
+    }
   }
 
   function render() {
