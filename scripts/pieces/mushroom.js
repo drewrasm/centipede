@@ -11,7 +11,7 @@ MyGame.pieces.mushroom = function (spec) {
 
   let imageReady = false;
   let image = new Image();
-  let lives = 3;
+  let lives = 4;
 
   const initializeImage = () => {
     image.onload = function () {
@@ -21,6 +21,9 @@ MyGame.pieces.mushroom = function (spec) {
   };
 
   const changeImage = () => {
+    if (lives == 3) {
+      spec.imageSrc = "images/life_3_mushroom.png";
+    }
     if (lives == 2) {
       spec.imageSrc = "images/life_2_mushroom.png";
     }
