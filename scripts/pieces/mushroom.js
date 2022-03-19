@@ -13,22 +13,20 @@ MyGame.pieces.mushroom = function (spec) {
   let image = new Image();
   let lives = 4;
 
-  const initializeImage = () => {
+  let isPoison = spec.isPoison || false;
+
+  const initializeImage = (newImage = null) => {
     image.onload = function () {
       imageReady = true;
     };
-    image.src = spec.imageSrc;
+    image.src = newImage || spec.imageSrc;
   };
 
   const changeImage = () => {
-    if (lives == 3) {
-      spec.imageSrc = "images/life_3_mushroom.png";
-    }
-    if (lives == 2) {
-      spec.imageSrc = "images/life_2_mushroom.png";
-    }
-    if (lives == 1) {
-      spec.imageSrc = "images/life_1_mushroom.png";
+    if (lives > 0) {
+      spec.imageSrc = `images/life_${lives}${
+        isPoison ? "_poison" : ""
+      }_mushroom.png`;
     }
     initializeImage();
   };
@@ -38,6 +36,12 @@ MyGame.pieces.mushroom = function (spec) {
     if (lives !== 0) {
       changeImage();
     }
+  };
+
+  const makePoisionous = () => {
+    isPoison = true;
+    let newImage = `images/${lives !== 4 ? 'life_' : ''}${lives !== 4 ? lives + '_' : ''}poison_mushroom.png`
+    initializeImage(newImage);
   };
 
   initializeImage();
@@ -67,6 +71,10 @@ MyGame.pieces.mushroom = function (spec) {
     get lives() {
       return lives;
     },
+    get isPoison() {
+      return isPoison;
+    },
     loseLife,
+    makePoisionous
   };
 };

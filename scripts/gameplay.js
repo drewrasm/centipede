@@ -119,6 +119,10 @@ MyGame.screens["gameplay"] = (function (
     // position: { x: graphics.width / 2, y: graphics.cellHeight / 2 },
   });
 
+  setTimeout(() => {
+    mushrooms[0].makePoisionous()
+  }, 4000)
+
   // make a centipede body object
   // make a centipede head object
   // make a poison mushroom object
