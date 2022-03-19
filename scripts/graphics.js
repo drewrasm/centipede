@@ -48,10 +48,42 @@ MyGame.graphics = (function () {
     context.restore();
   }
 
+  function drawSubTexture(
+    image,
+    index,
+    subTextureWidth,
+    center,
+    rotation,
+    size
+  ) {
+    context.save();
+
+    context.translate(center.x, center.y);
+    context.rotate(rotation);
+    context.translate(-center.x, -center.y);
+
+    //
+    // Pick the selected sprite from the sprite sheet to render
+    context.drawImage(
+      image,
+      subTextureWidth * index,
+      0, // Which sub-texture to pick out
+      subTextureWidth,
+      image.height, // The size of the sub-texture
+      center.x - size.x / 2, // Where to draw the sub-texture
+      center.y - size.y / 2,
+      size.x,
+      size.y
+    );
+
+    context.restore();
+  }
+
   let api = {
     clear: clear,
     drawTexture: drawTexture,
     drawText: drawText,
+    drawSubTexture: drawSubTexture,
     canvas,
     HEIGHT_BOUND,
     cellHeight,

@@ -119,11 +119,20 @@ MyGame.screens["gameplay"] = (function (
     // position: { x: graphics.width / 2, y: graphics.cellHeight / 2 },
   });
 
-  setTimeout(() => {
-    mushrooms[0].makePoisionous()
-  }, 4000)
-
   // make a centipede body object
+  // let centipede = pieces.centipede({
+  //   size: {x: graphics.cellWidth, y: graphics.cellHeight},
+  //   center: {x: graphics.cellWidth, y: graphics.cellHeight * graphics.HEIGHT_BOUND},
+  //   rotation: 0,
+  // })
+
+  // let centipedeRender = renderer.AnimatedModel({
+  //   spriteSheet: 'images/centipede-head.png',
+  //   spriteCount: 8,
+  //   spriteTime: [25, 25, 25, 25, 25, 25, 25, 25]
+  // }, graphics)
+
+
   // make a centipede head object
   // make a poison mushroom object
 
@@ -185,6 +194,8 @@ MyGame.screens["gameplay"] = (function (
       }
     }
 
+    // centipedeRender.update(elapsedTime);
+
     scoreText.updateText(score);
   }
 
@@ -201,6 +212,7 @@ MyGame.screens["gameplay"] = (function (
     for(let life of lives) {
       renderer.life.render(life);
     }
+    // centipedeRender.render(centipede);
   }
 
   function gameLoop(time) {
