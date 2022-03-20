@@ -7,6 +7,8 @@ MyGame.screens["gameplay"] = (function (
 ) {
   "use strict";
 
+  const CENTIPEDE_LENGTH = 1;
+
   let canvas = document.getElementById("id-canvas");
 
   const randomNumber = (min, max) => {
@@ -24,7 +26,7 @@ MyGame.screens["gameplay"] = (function (
 
   const generateMushrooms = () => {
     mushrooms = [];
-    for (let row = 1; row <= graphics.rows; row++) {
+    for (let row = 2; row <= graphics.rows; row++) {
       let randMushCount = randomNumber(1, 2);
       let randColumns = [];
       for (let m = 0; m <= randMushCount; m++) {
@@ -87,7 +89,7 @@ MyGame.screens["gameplay"] = (function (
         width: graphics.cellWidth * 0.65,
         height: graphics.cellHeight * 0.65,
         center: {
-          x: (canvas.width / 2) + (i * graphics.cellWidth),
+          x: canvas.width / 2 + i * graphics.cellWidth,
           y: graphics.cellWidth / 2,
         },
         imageSrc: "images/wand.png",
@@ -99,8 +101,10 @@ MyGame.screens["gameplay"] = (function (
     width: graphics.cellWidth * 0.65,
     height: graphics.cellHeight * 0.65,
     center: {
-      x: canvas.width / 2 + 10,
-      y: graphics.cellHeight * graphics.HEIGHT_BOUND,
+      x:
+        (graphics.columns / 2 + 1) * graphics.cellWidth +
+        graphics.cellWidth / 2,
+      y: (graphics.rows - 4) * graphics.cellHeight + graphics.cellHeight / 2,
     },
     imageSrc: "images/wand.png",
     moveRate: 0.55,
@@ -116,22 +120,46 @@ MyGame.screens["gameplay"] = (function (
     fillStyle: " #cccccc",
     strokeStyle: " #cccccc",
     position: { x: graphics.canvas.width / 4, y: 2 },
-    // position: { x: graphics.width / 2, y: graphics.cellHeight / 2 },
   });
 
-  // make a centipede body object
-  // let centipede = pieces.centipede({
-  //   size: {x: graphics.cellWidth, y: graphics.cellHeight},
-  //   center: {x: graphics.cellWidth, y: graphics.cellHeight * graphics.HEIGHT_BOUND},
-  //   rotation: 0,
-  // })
+  let centipedePieces = [];
 
-  // let centipedeRender = renderer.AnimatedModel({
-  //   spriteSheet: 'images/centipede-head.png',
-  //   spriteCount: 8,
-  //   spriteTime: [25, 25, 25, 25, 25, 25, 25, 25]
-  // }, graphics)
+  const generateCentipede = () => {
+    centipedePieces = [];
+    for (let segment = 1; segment <= CENTIPEDE_LENGTH; segment++) {
+      let piece = pieces.centipede({
+        size: { x: graphics.cellWidth * 2, y: graphics.cellHeight },
+        center: {
+          x: graphics.cellWidth / 2 + graphics.cellWidth * segment,
+          y: (graphics.cellHeight / 2) * 3,
+        },
+        isHead: segment == CENTIPEDE_LENGTH,
+        goingEast: true,
+      });
+      piece.setRotation("east");
+      centipedePieces.push(piece);
+    }
+  };
 
+  generateCentipede();
+
+  let centipedeRender = renderer.AnimatedModel(
+    {
+      spriteSheet: "images/centipede-body.png",
+      spriteCount: 8,
+      spriteTime: [25, 25, 25, 25, 25, 25, 25, 25],
+    },
+    graphics
+  );
+
+  let centipedeHeadRender = renderer.AnimatedModel(
+    {
+      spriteSheet: "images/centipede-head.png",
+      spriteCount: 8,
+      spriteTime: [25, 25, 25, 25, 25, 25, 25, 25],
+    },
+    graphics
+  );
 
   // make a centipede head object
   // make a poison mushroom object
@@ -193,8 +221,47 @@ MyGame.screens["gameplay"] = (function (
         remove(lazers, l);
       }
     }
+    for (let centipede of centipedePieces) {
+      // if(!centipede.isMoving) {
+      //   console.log('we can change directions')
 
-    // centipedeRender.update(elapsedTime);
+      //   // check if the centipede was traveling north or south
+      //   if(centipede.rotation == centipede.directions.north || centipede.rotation == centipede.directions.south) {
+      //     if(centipede.goingEast) {
+      //       centipede.setRotation('east')
+      //     } else {
+      //       centipede.setRotation('west')
+      //     }
+      //     continue
+      //   }
+  
+      //   // check if the piece hit the x barrier and needs to go down or up
+      //   if (
+      //     centipede.center.x ==
+      //       graphics.cellWidth * graphics.columns - graphics.cellWidth / 2 ||
+      //     centipede.center.x == graphics.cellWidth / 2
+      //   ) {
+      //     if (centipede.goingNorth) {
+      //       centipede.setRotation("north");
+      //     } else {
+      //       centipede.setRotation("south");
+      //     }
+      //     centipede.toggleGoingEast()
+      //     continue
+      //   }
+  
+      //   // check if the centipede hit a mushroom
+      //   for (let m of mushrooms) {
+      //     if (isIntersecting(centipede, m)) {
+      //       // hit a mushroom
+      //     }
+      //   }
+      // }
+      centipede.move(elapsedTime);
+    }
+
+    centipedeRender.update(elapsedTime);
+    centipedeHeadRender.update(elapsedTime);
 
     scoreText.updateText(score);
   }
@@ -209,10 +276,16 @@ MyGame.screens["gameplay"] = (function (
     for (let l of lazers) {
       renderer.lazer.render(l);
     }
-    for(let life of lives) {
+    for (let life of lives) {
       renderer.life.render(life);
     }
-    // centipedeRender.render(centipede);
+    for (let centipede of centipedePieces) {
+      if (centipede.isHead) {
+        centipedeHeadRender.render(centipede);
+      } else {
+        centipedeRender.render(centipede);
+      }
+    }
   }
 
   function gameLoop(time) {
