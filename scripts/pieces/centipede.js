@@ -9,9 +9,7 @@ MyGame.pieces.centipede = function (spec) {
   let cellHeight = canvas.height / 20;
   let cellWidth = canvas.width / 30;
 
-  let moveTime = 0;
-
-  let isMoving = false;
+  // let moveTime = 0;
 
   const north = (90 * Math.PI) / 180;
   const east = (180 * Math.PI) / 180;
@@ -25,29 +23,33 @@ MyGame.pieces.centipede = function (spec) {
     west,
   };
 
-  const move = (elapsedTime) => {
-    moveTime += elapsedTime;
-    if (moveTime >= 500) {
-      isMoving = true;
-      console.log('is moving')
-      // if (moveTime >= 60) {
+  // figure out how you want the centipede to move
+
+  
+
+  const move = () => {
+  // const move = (elapsedTime) => {
+    // moveTime += elapsedTime;
+    // if (moveTime >= 100) {
+        console.log(spec.rotation)
       // move right if no boundaries and direction east
       // move left if no boundaries and direction west
       // move down if there is a boundary or you reached limit
       // change direction after moving down
       if (spec.rotation == directions.east) {
         spec.center.x += cellWidth;
-      } else if (spec.rotation == directions.north) {
+      }
+      else if (spec.rotation == directions.north) {
         spec.center.y -= cellHeight;
-      } else if (spec.rotation == directions.south) {
+      }
+      else if (spec.rotation == directions.south) {
         spec.center.y += cellHeight;
-      } else if (spec.rotation == directions.west) {
+      }
+      else if (spec.rotation == directions.west) {
         spec.center.x -= cellWidth;
       }
-      moveTime = 0;
-    } else {
-        isMoving = false;
-    }
+      // moveTime = 0;
+    // }
   };
 
   const setHead = () => {
@@ -84,9 +86,6 @@ MyGame.pieces.centipede = function (spec) {
     },
     get goingEast() {
       return spec.goingEast || false;
-    },
-    get isMoving() {
-      return isMoving;
     },
     directions,
     toggleGoingNorth,

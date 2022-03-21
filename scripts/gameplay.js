@@ -7,7 +7,7 @@ MyGame.screens["gameplay"] = (function (
 ) {
   "use strict";
 
-  const CENTIPEDE_LENGTH = 1;
+  const CENTIPEDE_LENGTH = 10;
 
   let canvas = document.getElementById("id-canvas");
 
@@ -122,6 +122,8 @@ MyGame.screens["gameplay"] = (function (
     position: { x: graphics.canvas.width / 4, y: 2 },
   });
 
+  let centipedeMoveTime = 0;
+
   let centipedePieces = [];
 
   const generateCentipede = () => {
@@ -221,43 +223,46 @@ MyGame.screens["gameplay"] = (function (
         remove(lazers, l);
       }
     }
-    for (let centipede of centipedePieces) {
-      // if(!centipede.isMoving) {
-      //   console.log('we can change directions')
 
-      //   // check if the centipede was traveling north or south
-      //   if(centipede.rotation == centipede.directions.north || centipede.rotation == centipede.directions.south) {
-      //     if(centipede.goingEast) {
-      //       centipede.setRotation('east')
-      //     } else {
-      //       centipede.setRotation('west')
-      //     }
-      //     continue
-      //   }
-  
-      //   // check if the piece hit the x barrier and needs to go down or up
-      //   if (
-      //     centipede.center.x ==
-      //       graphics.cellWidth * graphics.columns - graphics.cellWidth / 2 ||
-      //     centipede.center.x == graphics.cellWidth / 2
-      //   ) {
-      //     if (centipede.goingNorth) {
-      //       centipede.setRotation("north");
-      //     } else {
-      //       centipede.setRotation("south");
-      //     }
-      //     centipede.toggleGoingEast()
-      //     continue
-      //   }
-  
-      //   // check if the centipede hit a mushroom
-      //   for (let m of mushrooms) {
-      //     if (isIntersecting(centipede, m)) {
-      //       // hit a mushroom
-      //     }
-      //   }
-      // }
-      centipede.move(elapsedTime);
+    centipedeMoveTime += elapsedTime;
+    if(centipedeMoveTime > 10) {
+
+      for (let centipede of centipedePieces) {
+          // check if the centipede was traveling north or south
+          let isNorthOrSouth = centipede.rotation == centipede.directions.north || centipede.rotation == centipede.directions.south;
+          if(isNorthOrSouth) {
+            if(centipede.goingEast) {
+              console.log('setting east')
+              centipede.setRotation('east')
+            } else {
+              console.log('setting west')
+              centipede.setRotation('west')
+            }
+          }
+    
+          // check if the piece hit the x barrier and needs to go down or up
+          else if (
+            centipede.center.x ==
+              graphics.cellWidth * graphics.columns - graphics.cellWidth / 2 ||
+            centipede.center.x == graphics.cellWidth / 2
+          ) {
+            if (centipede.goingNorth) {
+              centipede.setRotation("north");
+            } else {
+              centipede.setRotation("south");
+            }
+            centipede.toggleGoingEast()
+          }
+    
+          // check if the centipede hit a mushroom
+          for (let m of mushrooms) {
+            if (isIntersecting(centipede, m)) {
+              // hit a mushroom
+            }
+          }
+        centipede.move(elapsedTime);
+      }
+      centipedeMoveTime = 0;
     }
 
     centipedeRender.update(elapsedTime);
