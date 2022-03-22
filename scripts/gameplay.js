@@ -30,9 +30,9 @@ MyGame.screens["gameplay"] = (function (
       let randMushCount = randomNumber(1, 2);
       let randColumns = [];
       for (let m = 0; m <= randMushCount; m++) {
-        let column = randomNumber(1, graphics.columns);
+        let column = randomNumber(2, graphics.columns - 2);
         if (!randColumns.includes(column)) {
-          randColumns.push(randomNumber(1, graphics.columns));
+          randColumns.push(randomNumber(2, graphics.columns - 2));
         }
       }
       for (let col of randColumns) {
@@ -225,13 +225,24 @@ MyGame.screens["gameplay"] = (function (
     }
 
     centipedeMoveTime += elapsedTime;
-    if (centipedeMoveTime > 1) {
+    if (centipedeMoveTime > 20) {
       for (let centipede of centipedePieces) {
         // check if the centipede was traveling north or south
-        if (
+        let isTravelingNorS =
           centipede.rotation == centipede.directions.north ||
-          centipede.rotation == centipede.directions.south
-        ) {
+          centipede.rotation == centipede.directions.south;
+
+        let isHittingXBarrier =
+          centipede.center.x ==
+            graphics.cellWidth * graphics.columns - graphics.cellWidth / 2 ||
+          centipede.center.x == graphics.cellWidth / 2;
+
+        let isHittingYBarrier =
+          centipede.center.y ==
+            graphics.cellHeight * graphics.rows - graphics.cellHeight / 2 ||
+          centipede.center.y == (graphics.cellHeight / 2) * 3;
+
+        if (isTravelingNorS) {
           if (centipede.goingEast) {
             centipede.setRotation("east");
           } else {
@@ -240,17 +251,8 @@ MyGame.screens["gameplay"] = (function (
         }
 
         // check if the piece hit the x barrier and needs to go down or up
-        else if (
-          centipede.center.x ==
-            graphics.cellWidth * graphics.columns - graphics.cellWidth / 2 ||
-          centipede.center.x == graphics.cellWidth / 2
-        ) {
-          if (
-            centipede.center.y ==
-              graphics.cellHeight * graphics.rows - graphics.cellHeight / 2 ||
-            (centipede.center.y == (graphics.cellHeight / 2) * 3 &&
-              centipede.isPastStart)
-          ) {
+        else if (isHittingXBarrier) {
+          if (isHittingYBarrier && centipede.isPastStart) {
             centipede.toggleGoingNorth();
             centipede.setIsPastStart(false);
           } else {
@@ -263,14 +265,30 @@ MyGame.screens["gameplay"] = (function (
             centipede.setRotation("south");
           }
           centipede.toggleGoingEast();
-        } else {
-          // centipede.setIsPastStart();
         }
 
         // check if the centipede hit a mushroom
         for (let m of mushrooms) {
+          centipede.height = centipede.size.y;
+          centipede.width = centipede.size.x;
           if (isIntersecting(centipede, m)) {
-            // hit a mushroom
+            if (
+              centipede.rotation == centipede.directions.east ||
+              centipede.rotation == centipede.directions.west
+            ) {
+              if (isHittingYBarrier && centipede.isPastStart) {
+                centipede.toggleGoingNorth();
+                centipede.setIsPastStart(false);
+              } else {
+                centipede.setIsPastStart();
+              }
+              if (centipede.goingNorth) {
+                centipede.setRotation("north");
+              } else {
+                centipede.setRotation("south");
+              }
+            }
+            centipede.toggleGoingEast();
           }
         }
         centipede.move(elapsedTime);
