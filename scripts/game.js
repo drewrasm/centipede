@@ -14,6 +14,12 @@ MyGame.game = (function (screens) {
     document.getElementById(id).classList.add("active");
   }
 
+  document.addEventListener("keypress", (e) => {
+    if (e.key === "Escape") {
+      showScreen("main-menu");
+    }
+  });
+
   function initialize() {
     let screen = null;
     for (screen in screens) {

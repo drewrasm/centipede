@@ -57,6 +57,12 @@ MyGame.pieces.centipede = function (spec) {
     get size() {
       return spec.size;
     },
+    get width() {
+      return spec.size?.x;
+    },
+    get height() {
+      return spec.size?.y;
+    },
     get center() {
       return spec.center;
     },

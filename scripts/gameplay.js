@@ -113,6 +113,14 @@ MyGame.screens["gameplay"] = (function (
     handleLazer: handleLazer,
   });
 
+  const handlePlayerHit = () => {
+    player.setIsInPlay(false);
+    lives.pop()
+    setTimeout(() => {
+      player.setIsInPlay(true);
+    }, 1000)
+  }
+
   let score = 0;
   let scoreText = pieces.text({
     text: score,
@@ -217,6 +225,26 @@ MyGame.screens["gameplay"] = (function (
           }
         }
       }
+      for(let centipede of centipedePieces) {
+        if(isIntersecting(centipede, l)) {
+          hitObstacle = true;
+          score += 1000;
+          remove(centipedePieces, centipede)
+          mushrooms.push(
+            pieces.mushroom({
+              width: graphics.cellWidth * 0.75,
+              height: graphics.cellHeight * 0.75,
+              center: {
+                x: centipede.center.x,
+                y: centipede.center.y,
+              },
+              imageSrc: "images/mushroom.png",
+            })
+          );
+          // split the centipede
+        }
+      }
+
       if (l.center.y > 0 - graphics.cellHeight && !hitObstacle) {
         l.updateMovement(elapsedTime);
       } else {
@@ -225,7 +253,7 @@ MyGame.screens["gameplay"] = (function (
     }
 
     centipedeMoveTime += elapsedTime;
-    if (centipedeMoveTime > 50) {
+    if (centipedeMoveTime > 80) {
       for (let centipede of centipedePieces) {
         // check if the centipede was traveling north or south
         let isTravelingNorS =
@@ -269,8 +297,6 @@ MyGame.screens["gameplay"] = (function (
 
         // check if the centipede hit a mushroom
         for (let m of mushrooms) {
-          centipede.height = centipede.size.y;
-          centipede.width = centipede.size.x;
           if (isIntersecting(centipede, m)) {
             if (
               centipede.rotation == centipede.directions.east ||
@@ -291,6 +317,13 @@ MyGame.screens["gameplay"] = (function (
             centipede.toggleGoingEast();
           }
         }
+
+        // check if it hits a player
+        if(isIntersecting(centipede, player) && player.isInPlay) {
+          // lose a life 
+          handlePlayerHit();
+        }
+
         centipede.move(elapsedTime);
       }
       centipedeMoveTime = 0;
@@ -304,7 +337,9 @@ MyGame.screens["gameplay"] = (function (
 
   function render() {
     graphics.clear();
-    renderer.player.render(player);
+    if(player.isInPlay) {
+      renderer.player.render(player);
+    }
     renderer.text.render(scoreText);
     for (let m of mushrooms) {
       renderer.mushroom.render(m);

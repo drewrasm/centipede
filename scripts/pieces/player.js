@@ -12,6 +12,8 @@ MyGame.pieces.player = function (spec) {
   let imageReady = false;
   let image = new Image();
 
+  let isInPlay = true;
+
   image.onload = function () {
     imageReady = true;
   };
@@ -81,6 +83,10 @@ MyGame.pieces.player = function (spec) {
     spec.handleLazer(spec.center);
   }, 125);
 
+  const setIsInPlay = (inPlay = true) => {
+    isInPlay = inPlay;
+  };
+
   let that = {
     get x() {
       return spec.center.x;
@@ -106,6 +112,10 @@ MyGame.pieces.player = function (spec) {
     get imageReady() {
       return imageReady;
     },
+    get isInPlay() {
+      return isInPlay;
+    },
+    setIsInPlay,
     moveUp,
     moveDown,
     moveRight,
