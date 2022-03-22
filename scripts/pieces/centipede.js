@@ -9,8 +9,6 @@ MyGame.pieces.centipede = function (spec) {
   let cellHeight = canvas.height / 20;
   let cellWidth = canvas.width / 30;
 
-  // let moveTime = 0;
-
   const north = (90 * Math.PI) / 180;
   const east = (180 * Math.PI) / 180;
   const south = (270 * Math.PI) / 180;
@@ -23,33 +21,16 @@ MyGame.pieces.centipede = function (spec) {
     west,
   };
 
-  // figure out how you want the centipede to move
-
-  
-
   const move = () => {
-  // const move = (elapsedTime) => {
-    // moveTime += elapsedTime;
-    // if (moveTime >= 100) {
-        console.log(spec.rotation)
-      // move right if no boundaries and direction east
-      // move left if no boundaries and direction west
-      // move down if there is a boundary or you reached limit
-      // change direction after moving down
-      if (spec.rotation == directions.east) {
-        spec.center.x += cellWidth;
-      }
-      else if (spec.rotation == directions.north) {
-        spec.center.y -= cellHeight;
-      }
-      else if (spec.rotation == directions.south) {
-        spec.center.y += cellHeight;
-      }
-      else if (spec.rotation == directions.west) {
-        spec.center.x -= cellWidth;
-      }
-      // moveTime = 0;
-    // }
+    if (spec.rotation == directions.east) {
+      spec.center.x += cellWidth;
+    } else if (spec.rotation == directions.north) {
+      spec.center.y -= cellHeight;
+    } else if (spec.rotation == directions.south) {
+      spec.center.y += cellHeight;
+    } else if (spec.rotation == directions.west) {
+      spec.center.x -= cellWidth;
+    }
   };
 
   const setHead = () => {
@@ -66,6 +47,10 @@ MyGame.pieces.centipede = function (spec) {
 
   const toggleGoingEast = () => {
     spec.goingEast = !spec.goingEast;
+  };
+
+  const setIsPastStart = (isStarting = true) => {
+    spec.isPastStart = isStarting;
   };
 
   let that = {
@@ -87,7 +72,11 @@ MyGame.pieces.centipede = function (spec) {
     get goingEast() {
       return spec.goingEast || false;
     },
+    get isPastStart() {
+      return spec.isPastStart || false;
+    },
     directions,
+    setIsPastStart,
     toggleGoingNorth,
     toggleGoingEast,
     setHead,
