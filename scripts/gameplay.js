@@ -225,7 +225,7 @@ MyGame.screens["gameplay"] = (function (
     }
 
     centipedeMoveTime += elapsedTime;
-    if (centipedeMoveTime > 20) {
+    if (centipedeMoveTime > 50) {
       for (let centipede of centipedePieces) {
         // check if the centipede was traveling north or south
         let isTravelingNorS =
