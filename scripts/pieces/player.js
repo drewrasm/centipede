@@ -115,6 +115,9 @@ MyGame.pieces.player = function (spec) {
     get isInPlay() {
       return isInPlay;
     },
+    get heightBound() {
+      return HEIGHT_BOUND
+    },
     setIsInPlay,
     moveUp,
     moveDown,

@@ -17,6 +17,8 @@ MyGame.screens["gameplay"] = (function (
 
   let player;
 
+  let flea;
+
   let lives = [];
 
   let mushrooms = [];
@@ -29,7 +31,9 @@ MyGame.screens["gameplay"] = (function (
   let scoreText;
 
   let gameOverText;
+
   let centipedeMoveTime = 0;
+  let fleaMoveTime = 0;
 
   let centipedePieces = [];
 
@@ -105,7 +109,6 @@ MyGame.screens["gameplay"] = (function (
   };
 
   const initVars = () => {
-    console.log("initing vars");
     gameKeyboard = keyboard();
     gameOver = false;
     lastTimeStamp = performance.now();
@@ -134,6 +137,16 @@ MyGame.screens["gameplay"] = (function (
       checkIntersect: isIntersecting,
       handleLazer: handleLazer,
     });
+
+    flea = pieces.flea({
+      size: { x: graphics.cellWidth, y: graphics.cellHeight },
+      center: {
+        x: (graphics.cellWidth / 2) + (graphics.cellWidth * 10),
+        y: (graphics.cellHeight / 2) * 3,
+      },
+      startHeight: (graphics.cellHeight / 2) * 3,
+      isInPlay: false,
+    })
 
     scoreText = pieces.text({
       text: score,
@@ -244,6 +257,15 @@ MyGame.screens["gameplay"] = (function (
     graphics
   );
 
+  let fleaRenderer = renderer.AnimatedModel(
+    {
+      spriteSheet: "images/flea.png",
+      spriteCount: 4,
+      spriteTime: [25, 25, 25, 25]
+    },
+    graphics
+  )
+
   const updateKeys = () => {
     gameKeyboard.register(
       window.localStorage.getItem("up") || "ArrowUp",
@@ -275,6 +297,18 @@ MyGame.screens["gameplay"] = (function (
 
   function update(elapsedTime) {
     updateKeys();
+
+    let mushroomLowerCount = 0;
+
+    for(let m of mushrooms) {
+      if(m.y - m.height / 2 > graphics.cellHeight * player.heightBound) {
+        mushroomLowerCount += 1;
+      }
+    }
+
+    if(mushroomLowerCount <= 10) {
+      flea.setIsInPlay(true);
+    }
 
     player.barriers = mushrooms;
     for (let l of lazers) {
@@ -310,10 +344,56 @@ MyGame.screens["gameplay"] = (function (
         }
       }
 
+      if (centipedePieces.length == 0) {
+        gameOverText.updateText("NICE!, click 'main menu' to exit");
+        endGame();
+      }
+
+      if(flea.isInPlay && isIntersecting(l, flea)) {
+        hitObstacle = true;
+        otherHitAudio.play();
+        score += 400;
+        flea.setIsInPlay(false);
+        setTimeout(() => {
+          flea.setColumn(randomNumber(3, graphics.columns - 1))
+          flea.startOver();
+        }, 2000)
+      }
+
       if (l.center.y > 0 - graphics.cellHeight && !hitObstacle) {
         l.updateMovement(elapsedTime);
       } else {
         remove(lazers, l);
+      }
+    }
+
+    fleaMoveTime += elapsedTime;
+    if(fleaMoveTime > 150 && flea.isInPlay) {
+      let isMushroomDrop = flea.move();
+      if(flea.center.y > graphics.rows * graphics.cellHeight + 1) {
+        flea.setIsInPlay(false);
+        flea.setColumn(randomNumber(3, graphics.columns - 1))
+        setTimeout(() => {
+          flea.startOver();
+        }, 1000)
+      }
+      if(isMushroomDrop) {
+        mushrooms.push(
+          pieces.mushroom({
+            width: graphics.cellWidth * 0.75,
+            height: graphics.cellHeight * 0.75,
+            center: {x: flea.center.x, y: flea.center.y},
+            imageSrc: "images/mushroom.png",
+          })
+        );
+      }
+      fleaMoveTime = 0;
+    }
+
+    if(flea.isInPlay && player.isInPlay) {
+      if(isIntersecting(flea, player)) {
+        otherHitAudio.play();
+        handlePlayerHit();
       }
     }
 
@@ -396,13 +476,9 @@ MyGame.screens["gameplay"] = (function (
 
     centipedeRender.update(elapsedTime);
     centipedeHeadRender.update(elapsedTime);
+    fleaRenderer.update(elapsedTime);
 
     scoreText.updateText(score);
-
-    if (centipedePieces.length == 0) {
-      gameOverText.updateText("NICE!, click 'main menu' to exit");
-      endGame();
-    }
   }
 
   function render() {
@@ -429,6 +505,9 @@ MyGame.screens["gameplay"] = (function (
     }
     if (gameOver) {
       renderer.text.render(gameOverText);
+    }
+    if(flea.isInPlay) {
+      fleaRenderer.render(flea);
     }
   }
 
