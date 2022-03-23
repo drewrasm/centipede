@@ -24,7 +24,7 @@ MyGame.screens["controls"] = (function (game) {
     },
     fire: {
       element: document.getElementById("control-fire"),
-      value: "Space",
+      value: " ",
     },
   };
 
@@ -43,6 +43,9 @@ MyGame.screens["controls"] = (function (game) {
   };
 
   const setControlHtml = (control, value) => {
+    if(value == " ") {
+      value = 'space'
+    }
     controls[control].element.innerHTML = value;
   };
 
@@ -85,7 +88,7 @@ MyGame.screens["controls"] = (function (game) {
       if (selectedControl !== null && !codeInUse(e.code)) {
         controls[selectedControl].value = e.code;
         setControlHtml(selectedControl, e.code);
-        storeControl(selectedControl, e.code);
+        storeControl(selectedControl, e.key);
       }
     });
   }

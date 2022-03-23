@@ -19,13 +19,15 @@ MyGame.screens["gameplay"] = (function (
 
   let flea;
 
+  let scorpion;
+
   let lives = [];
 
   let mushrooms = [];
 
   let lazers = [];
 
-  const CENTIPEDE_LENGTH = 10;
+  const CENTIPEDE_LENGTH = 17;
 
   let score = 0;
   let scoreText;
@@ -34,6 +36,7 @@ MyGame.screens["gameplay"] = (function (
 
   let centipedeMoveTime = 0;
   let fleaMoveTime = 0;
+  let scorpionMoveTime = 0;
 
   let centipedePieces = [];
 
@@ -145,6 +148,15 @@ MyGame.screens["gameplay"] = (function (
         y: (graphics.cellHeight / 2) * 3,
       },
       startHeight: (graphics.cellHeight / 2) * 3,
+      isInPlay: false,
+    })
+
+    scorpion = pieces.scorpion({
+      size: { x: graphics.cellWidth, y: graphics.cellHeight },
+      center: {
+        x: (graphics.cellWidth / 2),
+        y: (graphics.cellHeight / 2) * 3,
+      },
       isInPlay: false,
     })
 
@@ -266,6 +278,15 @@ MyGame.screens["gameplay"] = (function (
     graphics
   )
 
+  let scorpionRenderer = renderer.AnimatedModel(
+    {
+      spriteSheet: "images/scorpion.png",
+      spriteCount: 4,
+      spriteTime: [25, 25, 25, 25]
+    },
+    graphics
+  )
+
   const updateKeys = () => {
     gameKeyboard.register(
       window.localStorage.getItem("up") || "ArrowUp",
@@ -283,12 +304,10 @@ MyGame.screens["gameplay"] = (function (
       window.localStorage.getItem("left") || "ArrowLeft",
       player.moveLeft
     );
-    let fireKey = null;
-    // figure this out better lol
-    if (window.localStorage.getItem("fire") === "Space") {
-      fireKey = " ";
-    }
-    gameKeyboard.register(fireKey || " ", player.fire);
+    gameKeyboard.register(
+      window.localStorage.getItem("fire") || "Space",
+      player.fire
+    );
   };
 
   function processInput(elapsedTime) {
@@ -308,6 +327,7 @@ MyGame.screens["gameplay"] = (function (
 
     if(mushroomLowerCount <= 10) {
       flea.setIsInPlay(true);
+      scorpion.setIsInPlay(true);
     }
 
     player.barriers = mushrooms;
@@ -357,7 +377,17 @@ MyGame.screens["gameplay"] = (function (
         setTimeout(() => {
           flea.setColumn(randomNumber(3, graphics.columns - 1))
           flea.startOver();
-        }, 2000)
+        }, 10000)
+      }
+
+      if(scorpion.isInPlay && isIntersecting(l, scorpion)) {
+        hitObstacle = true;
+        otherHitAudio.play();
+        score += 400;
+        scorpion.setIsInPlay(false);
+        setTimeout(() => {
+          scorpion.setRow(randomNumber(3, graphics.rows - 2))
+        }, 8000)
       }
 
       if (l.center.y > 0 - graphics.cellHeight && !hitObstacle) {
@@ -390,8 +420,34 @@ MyGame.screens["gameplay"] = (function (
       fleaMoveTime = 0;
     }
 
+    scorpionMoveTime += elapsedTime;
+    if(scorpionMoveTime > 150 && scorpion.isInPlay) {
+      scorpion.move();
+      if(scorpion.center.x > graphics.cellWidth * graphics.columns - graphics.cellWidth / 2) {
+        scorpion.setIsInPlay(false);
+        scorpion.setRow(randomNumber(3, graphics.rows - 1))
+        setTimeout(() => {
+          scorpion.startOver();
+        }, 1000)
+      }
+      scorpionMoveTime = 0;
+    }
+
+    for(let m of mushrooms) {
+      if(scorpion.isInPlay && isIntersecting(scorpion, m)) {
+        m.makePoisionous();
+      }
+    }
+
     if(flea.isInPlay && player.isInPlay) {
       if(isIntersecting(flea, player)) {
+        otherHitAudio.play();
+        handlePlayerHit();
+      }
+    }
+
+    if(scorpion.isInPlay && player.isInPlay) {
+      if(isIntersecting(scorpion, player)) {
         otherHitAudio.play();
         handlePlayerHit();
       }
@@ -477,6 +533,7 @@ MyGame.screens["gameplay"] = (function (
     centipedeRender.update(elapsedTime);
     centipedeHeadRender.update(elapsedTime);
     fleaRenderer.update(elapsedTime);
+    scorpionRenderer.update(elapsedTime);
 
     scoreText.updateText(score);
   }
@@ -508,6 +565,9 @@ MyGame.screens["gameplay"] = (function (
     }
     if(flea.isInPlay) {
       fleaRenderer.render(flea);
+    }
+    if(scorpion.isInPlay) {
+      scorpionRenderer.render(scorpion);
     }
   }
 
