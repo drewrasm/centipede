@@ -7,7 +7,47 @@ MyGame.screens["gameplay"] = (function (
 ) {
   "use strict";
 
+  let gameKeyboard = keyboard();
+
+  let gameOver = false;
+
+  let lastTimeStamp = performance.now();
+  let totalTime = 0;
+  let cancelNextRequest = true;
+
+  let player;
+
+  let lives = [];
+
+  let mushrooms = [];
+
+  let lazers = [];
+
   const CENTIPEDE_LENGTH = 10;
+
+  let score = 0;
+  let scoreText;
+
+  let gameOverText;
+  let centipedeMoveTime = 0;
+
+  let centipedePieces = [];
+
+  const endGame = () => {
+    gameOver = true;
+    cancelNextRequest = true;
+
+    let scores = localStorage.getItem('scores') || '[]';
+    scores = JSON.parse(scores);
+    scores.push(score)
+    scores.sort(function(a, b) {
+      return a - b;
+    });
+    if(scores.length > 5) {
+      scores.shift()
+    }
+    localStorage.setItem('scores', JSON.stringify(scores))
+  };
 
   let canvas = document.getElementById("id-canvas");
 
@@ -21,8 +61,6 @@ MyGame.screens["gameplay"] = (function (
       array.splice(index, 1);
     }
   };
-
-  let mushrooms = [];
 
   const generateMushrooms = () => {
     mushrooms = [];
@@ -51,7 +89,55 @@ MyGame.screens["gameplay"] = (function (
     }
   };
 
-  generateMushrooms();
+  const initVars = () => {
+    console.log("initing vars");
+    gameKeyboard = keyboard();
+    gameOver = false;
+    lastTimeStamp = performance.now();
+    totalTime = 0;
+    cancelNextRequest = true;
+    mushrooms = [];
+    score = 0;
+    generateMushrooms();
+
+    lazers = [];
+    lives = [];
+    generateLives();
+
+    player = pieces.player({
+      width: graphics.cellWidth * 0.65,
+      height: graphics.cellHeight * 0.65,
+      center: {
+        x:
+          (graphics.columns / 2 + 1) * graphics.cellWidth +
+          graphics.cellWidth / 2,
+        y: (graphics.rows - 4) * graphics.cellHeight + graphics.cellHeight / 2,
+      },
+      imageSrc: "images/wand.png",
+      moveRate: 0.55,
+      barriers: mushrooms,
+      checkIntersect: isIntersecting,
+      handleLazer: handleLazer,
+    });
+
+    scoreText = pieces.text({
+      text: score,
+      font: `${graphics.cellHeight * 0.8}pt Arial`,
+      fillStyle: " #cccccc",
+      strokeStyle: " #cccccc",
+      position: { x: graphics.canvas.width / 4, y: 2 },
+    });
+
+    gameOverText = pieces.text({
+      text: 'GAME OVER, click "Main Menu',
+      font: `${graphics.cellHeight * 0.8}pt Arial`,
+      fillStyle: " #cccccc",
+      strokeStyle: " #cccccc",
+      position: { x: graphics.canvas.width / 3, y: graphics.canvas.height / 2 },
+    });
+
+    generateCentipede();
+  };
 
   const isIntersecting = (first, second) => {
     return (
@@ -67,8 +153,6 @@ MyGame.screens["gameplay"] = (function (
     );
   };
 
-  let lazers = [];
-
   const handleLazer = (lazerCenter) => {
     // create a new lazer and let it do it's thang
     lazers.push(
@@ -81,59 +165,33 @@ MyGame.screens["gameplay"] = (function (
     );
   };
 
-  let lives = [];
-
-  for (let i = 0; i < 3; i++) {
-    lives.push(
-      pieces.life({
-        width: graphics.cellWidth * 0.65,
-        height: graphics.cellHeight * 0.65,
-        center: {
-          x: canvas.width / 2 + i * graphics.cellWidth,
-          y: graphics.cellWidth / 2,
-        },
-        imageSrc: "images/wand.png",
-      })
-    );
-  }
-
-  let player = pieces.player({
-    width: graphics.cellWidth * 0.65,
-    height: graphics.cellHeight * 0.65,
-    center: {
-      x:
-        (graphics.columns / 2 + 1) * graphics.cellWidth +
-        graphics.cellWidth / 2,
-      y: (graphics.rows - 4) * graphics.cellHeight + graphics.cellHeight / 2,
-    },
-    imageSrc: "images/wand.png",
-    moveRate: 0.55,
-    barriers: mushrooms,
-    checkIntersect: isIntersecting,
-    handleLazer: handleLazer,
-  });
+  const generateLives = () => {
+    for (let i = 0; i < 3; i++) {
+      lives.push(
+        pieces.life({
+          width: graphics.cellWidth * 0.65,
+          height: graphics.cellHeight * 0.65,
+          center: {
+            x: canvas.width / 2 + i * graphics.cellWidth,
+            y: graphics.cellWidth / 2,
+          },
+          imageSrc: "images/wand.png",
+        })
+      );
+    }
+  };
 
   const handlePlayerHit = () => {
     player.setIsInPlay(false);
-    lives.pop()
-    setTimeout(() => {
-      player.setIsInPlay(true);
-    }, 1000)
-  }
-
-  let score = 0;
-  let scoreText = pieces.text({
-    text: score,
-    font: `${graphics.cellHeight * 0.8}pt Arial`,
-    fillStyle: " #cccccc",
-    strokeStyle: " #cccccc",
-    position: { x: graphics.canvas.width / 4, y: 2 },
-  });
-
-  let centipedeMoveTime = 0;
-
-  let centipedePieces = [];
-
+    lives.pop();
+    if (lives.length === 0) {
+      endGame();
+    } else {
+      setTimeout(() => {
+        player.setIsInPlay(true);
+      }, 1000);
+    }
+  };
   const generateCentipede = () => {
     centipedePieces = [];
     for (let segment = 1; segment <= CENTIPEDE_LENGTH; segment++) {
@@ -150,8 +208,6 @@ MyGame.screens["gameplay"] = (function (
       centipedePieces.push(piece);
     }
   };
-
-  generateCentipede();
 
   let centipedeRender = renderer.AnimatedModel(
     {
@@ -170,15 +226,6 @@ MyGame.screens["gameplay"] = (function (
     },
     graphics
   );
-
-  // make a centipede head object
-  // make a poison mushroom object
-
-  let gameKeyboard = keyboard();
-
-  let lastTimeStamp = performance.now();
-  let totalTime = 0;
-  let cancelNextRequest = true;
 
   const updateKeys = () => {
     gameKeyboard.register(
@@ -225,11 +272,11 @@ MyGame.screens["gameplay"] = (function (
           }
         }
       }
-      for(let centipede of centipedePieces) {
-        if(isIntersecting(centipede, l)) {
+      for (let centipede of centipedePieces) {
+        if (isIntersecting(centipede, l)) {
           hitObstacle = true;
           score += 1000;
-          remove(centipedePieces, centipede)
+          remove(centipedePieces, centipede);
           mushrooms.push(
             pieces.mushroom({
               width: graphics.cellWidth * 0.75,
@@ -319,8 +366,8 @@ MyGame.screens["gameplay"] = (function (
         }
 
         // check if it hits a player
-        if(isIntersecting(centipede, player) && player.isInPlay) {
-          // lose a life 
+        if (isIntersecting(centipede, player) && player.isInPlay) {
+          // lose a life
           handlePlayerHit();
         }
 
@@ -333,11 +380,16 @@ MyGame.screens["gameplay"] = (function (
     centipedeHeadRender.update(elapsedTime);
 
     scoreText.updateText(score);
+
+    if(centipedePieces.length == 0) {
+      gameOverText.updateText("NICE!, click 'main menu' to exit")
+      endGame();
+    }
   }
 
   function render() {
     graphics.clear();
-    if(player.isInPlay) {
+    if (player.isInPlay) {
       renderer.player.render(player);
     }
     renderer.text.render(scoreText);
@@ -357,6 +409,9 @@ MyGame.screens["gameplay"] = (function (
         centipedeRender.render(centipede);
       }
     }
+    if (gameOver) {
+      renderer.text.render(gameOverText);
+    }
   }
 
   function gameLoop(time) {
@@ -374,16 +429,17 @@ MyGame.screens["gameplay"] = (function (
   }
 
   function initialize() {
+    gameOver = false;
+    initVars();
     updateKeys();
     document.getElementById("game-to-main").addEventListener("click", () => {
       cancelNextRequest = true;
       game.showScreen("main-menu");
     });
-    window.isIntersecting = isIntersecting;
-    window.player = player;
   }
 
   function run() {
+    initVars();
     lastTimeStamp = performance.now();
     cancelNextRequest = false;
     requestAnimationFrame(gameLoop);
