@@ -21,6 +21,8 @@ MyGame.screens["gameplay"] = (function (
 
   let scorpion;
 
+  let spider; 
+
   let lives = [];
 
   let mushrooms = [];
@@ -37,6 +39,7 @@ MyGame.screens["gameplay"] = (function (
   let centipedeMoveTime = 0;
   let fleaMoveTime = 0;
   let scorpionMoveTime = 0;
+  let spiderMoveTime = 0;
 
   let centipedePieces = [];
 
@@ -86,7 +89,7 @@ MyGame.screens["gameplay"] = (function (
 
   const generateMushrooms = () => {
     mushrooms = [];
-    for (let row = 2; row <= graphics.rows; row++) {
+    for (let row = 2; row <= graphics.rows - 3; row++) {
       let randMushCount = randomNumber(1, 2);
       let randColumns = [];
       for (let m = 0; m <= randMushCount; m++) {
@@ -156,6 +159,15 @@ MyGame.screens["gameplay"] = (function (
       center: {
         x: (graphics.cellWidth / 2),
         y: (graphics.cellHeight / 2) * 3,
+      },
+      isInPlay: false,
+    })
+
+    spider = pieces.spider({
+      size: { x: graphics.cellWidth, y: graphics.cellHeight },
+      center: {
+        x: (graphics.cellWidth / 2),
+        y: (graphics.cellHeight / 2) * 5,
       },
       isInPlay: false,
     })
@@ -287,6 +299,15 @@ MyGame.screens["gameplay"] = (function (
     graphics
   )
 
+  let spiderRenderer = renderer.AnimatedModel(
+    {
+      spriteSheet: "images/spider.png",
+      spriteCount: 8,
+      spriteTime: [25, 25, 25, 25, 25, 25, 25, 25]
+    },
+    graphics
+  )
+
   const updateKeys = () => {
     gameKeyboard.register(
       window.localStorage.getItem("up") || "ArrowUp",
@@ -328,6 +349,7 @@ MyGame.screens["gameplay"] = (function (
     if(mushroomLowerCount <= 10) {
       flea.setIsInPlay(true);
       scorpion.setIsInPlay(true);
+      spider.setIsInPlay(true);
     }
 
     player.barriers = mushrooms;
@@ -389,6 +411,15 @@ MyGame.screens["gameplay"] = (function (
           scorpion.setRow(randomNumber(3, graphics.rows - 2))
         }, 8000)
       }
+      if(spider.isInPlay && isIntersecting(l, spider)) {
+        hitObstacle = true;
+        otherHitAudio.play();
+        score += 2000;
+        spider.setIsInPlay(false);
+        setTimeout(() => {
+          spider.setRow(randomNumber(3, graphics.rows - 6))
+        }, 8000)
+      }
 
       if (l.center.y > 0 - graphics.cellHeight && !hitObstacle) {
         l.updateMovement(elapsedTime);
@@ -432,6 +463,18 @@ MyGame.screens["gameplay"] = (function (
       }
       scorpionMoveTime = 0;
     }
+    spiderMoveTime += elapsedTime;
+    if(spiderMoveTime > 75 && spider.isInPlay) {
+      spider.move();
+      if(spider.center.x > graphics.cellWidth * graphics.columns - graphics.cellWidth / 2) {
+        spider.setIsInPlay(false);
+        spider.setRow(randomNumber(3, graphics.rows - 1))
+        setTimeout(() => {
+          spider.startOver();
+        }, 1000)
+      }
+      spiderMoveTime = 0;
+    }
 
     for(let m of mushrooms) {
       if(scorpion.isInPlay && isIntersecting(scorpion, m)) {
@@ -448,6 +491,13 @@ MyGame.screens["gameplay"] = (function (
 
     if(scorpion.isInPlay && player.isInPlay) {
       if(isIntersecting(scorpion, player)) {
+        otherHitAudio.play();
+        handlePlayerHit();
+      }
+    }
+
+    if(spider.isInPlay && player.isInPlay) {
+      if(isIntersecting(spider, player)) {
         otherHitAudio.play();
         handlePlayerHit();
       }
@@ -534,6 +584,7 @@ MyGame.screens["gameplay"] = (function (
     centipedeHeadRender.update(elapsedTime);
     fleaRenderer.update(elapsedTime);
     scorpionRenderer.update(elapsedTime);
+    spiderRenderer.update(elapsedTime);
 
     scoreText.updateText(score);
   }
@@ -568,6 +619,9 @@ MyGame.screens["gameplay"] = (function (
     }
     if(scorpion.isInPlay) {
       scorpionRenderer.render(scorpion);
+    }
+    if(spider.isInPlay) {
+      spiderRenderer.render(spider);
     }
   }
 

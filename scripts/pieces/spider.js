@@ -1,4 +1,4 @@
-MyGame.pieces.scorpion = function (spec) {
+MyGame.pieces.spider = function (spec) {
     "use strict";
   
     let canvas = document.getElementById("id-canvas");
