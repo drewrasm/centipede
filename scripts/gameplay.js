@@ -33,20 +33,35 @@ MyGame.screens["gameplay"] = (function (
 
   let centipedePieces = [];
 
+  let lazerAudio = new Audio();
+  lazerAudio.src = 'sounds/lazer-shot.mp3';
+
+  let centipedeHitAudio = new Audio();
+  centipedeHitAudio.src = 'sounds/hit-centipede.mp3';
+
+  let mushroomHitAudio = new Audio();
+  mushroomHitAudio.src = 'sounds/hit-mushroom.mp3';
+
+  let otherHitAudio = new Audio();
+  otherHitAudio.src = 'sounds/other-hit.mp3';
+
+  let playerDeathAudio = new Audio();
+  playerDeathAudio.src = 'sounds/player-death.mp3';
+
   const endGame = () => {
     gameOver = true;
     cancelNextRequest = true;
 
-    let scores = localStorage.getItem('scores') || '[]';
+    let scores = localStorage.getItem("scores") || "[]";
     scores = JSON.parse(scores);
-    scores.push(score)
-    scores.sort(function(a, b) {
+    scores.push(score);
+    scores.sort(function (a, b) {
       return a - b;
     });
-    if(scores.length > 5) {
-      scores.shift()
+    if (scores.length > 5) {
+      scores.shift();
     }
-    localStorage.setItem('scores', JSON.stringify(scores))
+    localStorage.setItem("scores", JSON.stringify(scores));
   };
 
   let canvas = document.getElementById("id-canvas");
@@ -154,6 +169,7 @@ MyGame.screens["gameplay"] = (function (
   };
 
   const handleLazer = (lazerCenter) => {
+    lazerAudio.play();
     // create a new lazer and let it do it's thang
     lazers.push(
       pieces.lazer({
@@ -183,6 +199,7 @@ MyGame.screens["gameplay"] = (function (
 
   const handlePlayerHit = () => {
     player.setIsInPlay(false);
+    playerDeathAudio.play();
     lives.pop();
     if (lives.length === 0) {
       endGame();
@@ -265,7 +282,8 @@ MyGame.screens["gameplay"] = (function (
       for (let m of mushrooms) {
         if (isIntersecting(l, m)) {
           hitObstacle = true;
-          score += 600;
+          mushroomHitAudio.play();
+          score += 20;
           m.loseLife();
           if (m.lives === 0) {
             remove(mushrooms, m);
@@ -277,6 +295,7 @@ MyGame.screens["gameplay"] = (function (
           hitObstacle = true;
           score += 1000;
           remove(centipedePieces, centipede);
+          centipedeHitAudio.play();
           mushrooms.push(
             pieces.mushroom({
               width: graphics.cellWidth * 0.75,
@@ -288,7 +307,6 @@ MyGame.screens["gameplay"] = (function (
               imageSrc: "images/mushroom.png",
             })
           );
-          // split the centipede
         }
       }
 
@@ -381,8 +399,8 @@ MyGame.screens["gameplay"] = (function (
 
     scoreText.updateText(score);
 
-    if(centipedePieces.length == 0) {
-      gameOverText.updateText("NICE!, click 'main menu' to exit")
+    if (centipedePieces.length == 0) {
+      gameOverText.updateText("NICE!, click 'main menu' to exit");
       endGame();
     }
   }
